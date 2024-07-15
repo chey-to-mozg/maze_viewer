@@ -2,11 +2,12 @@ import tkinter as tk
 from src.data_processor import DataProcessor
 
 wall_offsets = [
-    (0, 1),
     (1, 0),
-    (0, -1),
-    (-1, 0)
+    (0, 1),
+    (-1, 0),
+    (0, -1)
 ]
+
 
 class UI:
     def __init__(self):
@@ -33,6 +34,8 @@ class UI:
         self.maze_shape: tuple | None = None
         self.maze_config: dict | None = None
         self.maze_size = (601, 601)
+        self.maze_start: tuple | None = None
+        self.maze_finish: tuple | None = None
 
         self.maze_space = tk.Canvas(self.root, bg='blue', height=self.maze_size[0], width=self.maze_size[1])
         self.maze_space.pack(side=tk.RIGHT, anchor=tk.CENTER)
@@ -45,6 +48,8 @@ class UI:
         self.connect_status_label.config(text='Connected', fg='green')
         # read first data and init table and variables
         self.maze_shape = (3, 3)
+        self.maze_start = (2, 2)
+        self.maze_finish = (1, 0)
         self.maze_config = {
             'cell_size': self.maze_size[0] // max(self.maze_shape),
 
@@ -59,14 +64,24 @@ class UI:
                 offset = 2
                 corner_left = (x * size + offset, y * size + offset)
                 corner_right = ((x + 1) * size + offset, (y + 1) * size + offset)
-                if data['visited'][y][x]:
+                is_start = y == self.maze_start[0] and x == self.maze_start[1]
+                is_finish = y == self.maze_finish[0] and x == self.maze_finish[1]
+                if is_start or is_finish:
+                    self.maze_space.create_rectangle(
+                        corner_left,
+                        corner_right,
+                        fill='orange',
+                        width=0,
+                    )
+                elif data['visited'][y][x]:
                     self.maze_space.create_rectangle(
                         corner_left,
                         corner_right,
                         fill='green',
                         width=0,
                     )
-                    first_point = (corner_left[0] * size, corner_left[1] * size)
+                if data['visited'][y][x]:
+                    first_point = corner_left
                     for direction, wall in enumerate(data['walls'][y][x]):
                         second_point = (
                             first_point[0] + wall_offsets[direction][0] * size,
@@ -77,6 +92,8 @@ class UI:
                         first_point = second_point
 
                 center = ((corner_left[0] + corner_right[0]) // 2, (corner_left[1] + corner_right[1]) // 2)
-                self.maze_space.create_text(center, text=data['floodfill'][y][x])
-                # self.maze_space.create_line()
+                if data['position'][0] == y and data['position'][1] == x:
+                    self.maze_space.create_text(center, text='{ }')
+                else:
+                    self.maze_space.create_text(center, text=data['floodfill'][y][x])
 

@@ -1,9 +1,14 @@
 class DataProcessor:
     def __init__(self, port):
         # connect to com port
-        pass
+        self._init = True
 
     def get_data(self) -> dict:
+        if self._init:
+            # get maze shape, start and finish position
+            pass
+        else:
+            pass
         # parse data from com port and return processed object
         return {
             'floodfill': [
@@ -12,8 +17,8 @@ class DataProcessor:
                 [1, 2, 5],
             ],
             'walls': [
-                [(1, 0, 1, 1), (1, 0, 0, 0), (1, 1, 1, 0)],
-                [(1, 1, 0, 1), (0, 1, 0, 1), (1, 1, 0, 0)],
+                [(1, 0, 1, 1), (1, 0, 0, 0), (0, 0, 1, 0)],
+                [(1, 1, 0, 1), (0, 0, 0, 1), (1, 1, 0, 0)],
                 [(0, 0, 1, 1), (0, 1, 1, 0), (0, 1, 1, 1)],
             ],
             'visited': [
@@ -21,7 +26,7 @@ class DataProcessor:
                 [1, 1, 1],
                 [1, 1, 1]
             ],
-            'position': (1, 1),
+            'position': (1, 0),
         }
 
     def send_data(self, data: list):
